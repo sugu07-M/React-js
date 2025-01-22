@@ -1,0 +1,237 @@
+import React, { useState } from "react";
+import {
+    AppBar,
+    Box,
+    Toolbar,
+    Typography,
+    Button,
+    IconButton,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    TextField,
+    DialogContentText,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    TablePagination,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import { useTheme } from "@mui/material/styles";
+import { useMediaQuery } from "@mui/material";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+
+
+export default function Home1() {
+    const [open, setOpen] = useState(false);
+    const [formValues, setFormValues] = useState({
+        serialNumber: "",
+        address: "",
+        place: "",
+    });
+    const [data, setData] = useState([]);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // Detect mobile screen size
+    const navigate = useNavigate(); // Initialize the navigate hook
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormValues((prevValues) => ({
+            ...prevValues,
+            [name]: value,
+        }));
+    };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const newData = {
+            serialNumber: formValues.serialNumber,
+            address: formValues.address,
+            place: formValues.place,
+        };
+        setData((prevData) => [...prevData, newData]);
+        setFormValues({ serialNumber: "", address: "", place: "" });
+        handleClose();
+    };
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    const handleNavigate = (route) => {
+        navigate(route); // Dynamically navigate to the passed route
+    };
+    return (
+        <React.Fragment>
+            <Box sx={{ flexGrow: 1 }}>
+                <AppBar position="static">
+                    <Toolbar>
+                        <IconButton
+                            size="large"
+                            edge="start"
+                            color="inherit"
+                            aria-label="menu"
+                            sx={{ mr: 2 }}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                            My App
+                        </Typography>
+                        <Button
+                            style={{ marginRight: "3%" }}
+                            color="inherit"
+                            onClick={() => handleNavigate("/home1")} // Correctly pass the route
+                        >
+                            Home1
+                        </Button>
+                        <Button
+                            color="inherit"
+                            style={{ marginRight: "3%" }}
+                            onClick={() => handleNavigate("/home2")} // Correctly pass the route
+                        >
+                            Home2
+                        </Button>
+                        <Button
+                            color="inherit"
+                            style={{ marginRight: "3%" }}
+                            onClick={() => handleNavigate("/home3")} // Correctly pass the route
+                        >
+                            Home3
+                        </Button>
+                    </Toolbar>
+                </AppBar>
+            </Box>
+
+            {/* Dialog Form */}
+            <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>Enter Details</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>Please enter your details below.</DialogContentText>
+                    <TextField
+                        autoFocus
+                        required
+                        margin="dense"
+                        id="serialNumber"
+                        name="serialNumber"
+                        label="S. No."
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        value={formValues.serialNumber}
+                        onChange={handleInputChange}
+                    />
+                    <TextField
+                        required
+                        margin="dense"
+                        id="address"
+                        name="address"
+                        label="address"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        value={formValues.name}
+                        onChange={handleInputChange}
+                    />
+                    <TextField
+                        required
+                        id="place"
+                        name="place"
+                        label="place"
+                        type="place"
+                        fullWidth
+                        variant="standard"
+                        value={formValues.amount}
+                        onChange={handleInputChange}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="error">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleSubmit} color="primary">
+                        Save
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Table to display the submitted data */}
+            <h2 style={{ marginLeft: "13%" }}>Data Table</h2>
+            <Button
+                variant="contained"
+                onClick={handleClickOpen}
+                style={{ marginTop: "-82px", marginLeft: "80%" }}
+            >
+                Open form
+            </Button>
+            <TableContainer
+                component={Paper}
+                style={{ width: isMobile ? "100%" : "75%", margin: "20px auto" }}
+            >
+                <Table>
+                    <TableHead>
+                        <TableRow style={{ backgroundColor: "#1976d2" }}>
+                            {["S. No.", "address", "place"].map((header, index) => (
+                                <TableCell key={index} style={{ color: "white", fontWeight: "bold" }}>
+                                    {header}
+                                </TableCell>
+                            ))}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {data
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((item, index) => (
+                                <TableRow key={index} hover>
+                                    <TableCell>{item.serialNumber}</TableCell>
+                                    <TableCell>{item.address}</TableCell>
+                                    <TableCell>{item.place}</TableCell>
+                                </TableRow>
+                            ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
+            {/* Pagination Component */}
+            <TablePagination
+                component="div"
+                style={{ marginRight: "12%" }}
+                count={data.length}
+                page={page}
+                onPageChange={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                rowsPerPageOptions={isMobile ? [5, 10] : [5, 10, 25]} // Adjust row options for mobile
+                sx={{
+                    "& .MuiTablePagination-select": {
+                        fontSize: isMobile ? "0.875rem" : "1rem", // Adjust font size for mobile
+                    },
+                    "& .MuiTablePagination-caption": {
+                        fontSize: isMobile ? "0.875rem" : "1rem", // Adjust font size for mobile
+                    },
+                }}
+            />
+        </React.Fragment>
+    );
+}
