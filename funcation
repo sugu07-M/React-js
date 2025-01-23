@@ -1,0 +1,25 @@
+import download from './download.jpg';
+import ima from './unnamed.png';
+
+
+
+export function Pro(){
+  return(
+    <div className='demo' >
+    <img src={download} alt='Natural' />
+    </div>
+  );
+}
+
+
+
+ export function Bulid()
+{
+  return(
+    <div className='pho'>
+    <h3>hi world</h3>
+
+    <img src={ima} alt='Natural' />
+    </div>
+  );
+}
